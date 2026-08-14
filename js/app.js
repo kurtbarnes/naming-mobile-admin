@@ -397,22 +397,48 @@ function currentRecordView() {
   return top && top.type === 'record' ? top : null;
 }
 
+// The topmost 'record' entry in the stack (if any) renders as a full-screen page.
+// Any non-record entries stacked above it (add note/task, pickers, ...) render as a
+// bottom-sheet modal layered on top of whatever's currently showing.
+function findTopRecordView() {
+  for (let i = state.sheetStack.length - 1; i >= 0; i--) {
+    if (state.sheetStack[i].type === 'record') return state.sheetStack[i];
+  }
+  return null;
+}
+
 function renderSheet() {
+  renderPageStack();
+  renderModalSheet();
+}
+
+function renderPageStack() {
+  const container = el('pageStack');
+  const view = findTopRecordView();
+  if (!view) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+  container.classList.remove('hidden');
+  container.innerHTML = renderRecordSheet(view);
+}
+
+function renderModalSheet() {
   const overlay = el('sheetOverlay');
   const sheet = el('sheet');
-  if (!state.sheetStack.length) {
+  const top = state.sheetStack[state.sheetStack.length - 1];
+  if (!top || top.type === 'record') {
     overlay.classList.add('hidden');
     sheet.innerHTML = '';
     return;
   }
   overlay.classList.remove('hidden');
-  const top = state.sheetStack[state.sheetStack.length - 1];
   sheet.innerHTML = renderSheetView(top);
 }
 
 function renderSheetView(view) {
   switch (view.type) {
-    case 'record': return renderRecordSheet(view);
     case 'addNote': return renderAddNoteSheet(view);
     case 'addTask': return renderAddTaskSheet(view);
     case 'editTask': return renderEditTaskSheet(view);
@@ -428,7 +454,16 @@ function sheetHeader(title, opts = {}) {
     <div class="sheet-header">
       ${opts.back ? `<button class="icon-btn" data-action="sheet-back">←</button>` : `<span class="sheet-spacer"></span>`}
       <div class="sheet-title">${esc(title)}</div>
-      <button class="icon-btn" data-action="sheet-close">✕</button>
+      <button class="icon-btn" data-action="sheet-back">✕</button>
+    </div>`;
+}
+
+function pageHeader(title) {
+  return `
+    <div class="sheet-header page-header">
+      <button class="icon-btn" data-action="sheet-back">←</button>
+      <div class="sheet-title">${esc(title)}</div>
+      <span class="sheet-spacer"></span>
     </div>`;
 }
 
@@ -475,7 +510,7 @@ function renderRecordSheet(view) {
   const starHtml = isNew ? '' : `<span class="star star-lg ${onLists ? 'star-active' : ''}" data-action="open-action-picker" data-kind="${kind}" data-id="${rec.id}">${onLists ? '★' : '☆'}</span>`;
 
   return `
-    ${sheetHeader((kind === 'object' ? 'Naming Opportunity' : 'Instance') + (isNew ? ' (New)' : ''), { back: state.sheetStack.length > 1 })}
+    ${pageHeader((kind === 'object' ? 'Naming Opportunity' : 'Instance') + (isNew ? ' (New)' : ''))}
     <div class="sheet-recordhead">
       <input class="record-name-input" data-record-field="${nameField}" value="${esc(rec[nameField])}" />
       ${starHtml}
@@ -791,10 +826,6 @@ document.addEventListener('click', (e) => {
     case 'sheet-back':
       closeSheet();
       break;
-    case 'sheet-close':
-      closeAllSheets();
-      render();
-      break;
     case 'add-note':
       openSheet({ type: 'addNote', kind: t.dataset.kind, id: t.dataset.id });
       break;
@@ -1041,8 +1072,7 @@ el('btnUser').addEventListener('click', () => {
 
 el('sheetOverlay').addEventListener('click', (e) => {
   if (e.target.id === 'sheetOverlay') {
-    closeAllSheets();
-    render();
+    closeSheet();
   }
 });
 

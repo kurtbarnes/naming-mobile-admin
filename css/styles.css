@@ -311,6 +311,24 @@ main#viewContainer {
 .nav-icon { font-size: 20px; }
 .nav-btn.active { color: var(--brand); font-weight: 700; }
 
+/* ---------------- Full-screen record page ---------------- */
+.page-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--safe-bottom);
+  animation: page-in 0.2s ease-out;
+}
+.page-stack.hidden { display: none; }
+.page-stack .sheet-header { padding-top: calc(var(--safe-top) + 12px); }
+@keyframes page-in {
+  from { transform: translateX(36px); opacity: 0.5; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 /* ---------------- Sheet (bottom sheet / detail) ---------------- */
 .sheet-overlay {
   position: absolute;
