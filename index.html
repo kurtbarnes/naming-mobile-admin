@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Naming Opportunities — Field Admin</title>
+<meta name="theme-color" content="#0f6e5c" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="topbar-row">
+      <button id="btnUser" class="icon-btn" title="Settings">⚙️</button>
+      <h1 id="viewTitle">Naming Opportunities</h1>
+      <button id="btnLocation" class="icon-btn" title="Set my location">📍</button>
+    </div>
+    <div id="searchRow" class="search-row">
+      <input id="searchInput" type="search" placeholder="Search opportunities..." autocomplete="off" />
+      <select id="locationSelect" class="location-select"></select>
+      <div class="toggle-group" id="typeToggle">
+        <button data-mode="object" class="toggle-btn active">Opportunities</button>
+        <button data-mode="instance" class="toggle-btn">Instances</button>
+      </div>
+    </div>
+    <div id="locationBanner" class="location-banner hidden"></div>
+  </header>
+
+  <main id="viewContainer"></main>
+
+  <button id="fabAdd" class="fab hidden" data-action="add-object" title="Add Naming Opportunity">+</button>
+
+  <nav class="bottom-nav">
+    <button data-view="browse" class="nav-btn active">
+      <span class="nav-icon">🔎</span><span>Browse</span>
+    </button>
+    <button data-view="actionlist" class="nav-btn">
+      <span class="nav-icon">📋</span><span>Action List</span>
+    </button>
+    <button data-view="tasks" class="nav-btn">
+      <span class="nav-icon">✅</span><span>My Tasks</span>
+    </button>
+    <button data-view="templates" class="nav-btn">
+      <span class="nav-icon">⚙️</span><span>Templates</span>
+    </button>
+  </nav>
+</div>
+
+<div id="sheetOverlay" class="sheet-overlay hidden">
+  <div id="sheet" class="sheet"></div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" />
+
+<script src="js/data.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
