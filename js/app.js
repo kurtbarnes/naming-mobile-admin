@@ -357,6 +357,9 @@ function renderTemplates() {
       <label>Session user (used as task assignee)</label>
       <input type="text" id="userNameInput" value="${esc(DB.getUser())}" />
     </div>
+    ${(window.FieldGate && window.FieldGate.hasPassword())
+      ? `<button class="btn btn-block" data-action="lock-app" style="margin-top:14px;">🔒 Lock app</button>`
+      : ''}
   `;
 }
 
@@ -951,6 +954,9 @@ document.addEventListener('click', (e) => {
     case 'set-task-filter':
       state.taskFilter = t.dataset.filter;
       renderMain();
+      break;
+    case 'lock-app':
+      if (window.FieldGate) window.FieldGate.lock();
       break;
     case 'new-template':
       openSheet({ type: 'editTemplate', id: null });
